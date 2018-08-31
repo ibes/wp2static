@@ -361,10 +361,16 @@ EOHTML;
 
 $escaped_url_block = <<<EOHTML
 <section  id="hero"  data-images="[&quot;https:\/\/mysite.example.com\/wp-content\/themes\/onepress\/assets\/images\/hero5.jpg&quot;]"             class="hero-slideshow-wrapper hero-slideshow-normal">
+
+
+galleries.gallery_df5fd9d96b3091ef9ed156d5eac6929f.images_list = [{"image":"http:\/\/mysite.example.com\/wp-content\/gallery\/moalboal-backpacker-lodge\/batch_PanagsamaBeach01.jpg","srcsets":{"original":"http:\/\/mysite.example.com\/wp-content\/gallery\/moalboal-backpacker-lodge\/batch_PanagsamaBeach01.jpg"}
 EOHTML;
 
 $escaped_url_block_expected_rewrite = <<<EOHTML
 <section  id="hero"  data-images="[&quot;https:\/\/mysite.example.com\/contents\/ui\/theme\/assets\/images\/hero5.jpg&quot;]"             class="hero-slideshow-wrapper hero-slideshow-normal">
+
+
+galleries.gallery_df5fd9d96b3091ef9ed156d5eac6929f.images_list = [{"image":"http:\/\/mysite.example.com\/contents\/gallery\/moalboal-backpacker-lodge\/batch_PanagsamaBeach01.jpg","srcsets":{"original":"http:\/\/mysite.example.com\/contents\/gallery\/moalboal-backpacker-lodge\/batch_PanagsamaBeach01.jpg"}
 EOHTML;
 
 		// mock getResponseBody with testable HTML content
@@ -432,6 +438,8 @@ https:\/\/mydomain.com\/
 mydomain.com
 //mydomain.com
 http://mydomain.com
+
+galleries.gallery_df5fd9d96b3091ef9ed156d5eac6929f.images_list = [{"image":"http:\/\/mydomain.com\/wp-content\/gallery\/moalboal-backpacker-lodge\/batch_PanagsamaBeach01.jpg","srcsets":{"original":"http:\/\/mydomain.com\/wp-content\/gallery\/moalboal-backpacker-lodge\/batch_PanagsamaBeach01.jpg"}
 EOHTML;
 
 $escaped_url_block_expected_rewrite = <<<EOHTML
@@ -442,6 +450,8 @@ https:\/\/subdomain.mydomain.com\/
 subdomain.mydomain.com
 //subdomain.mydomain.com
 https://subdomain.mydomain.com
+
+galleries.gallery_df5fd9d96b3091ef9ed156d5eac6929f.images_list = [{"image":"https:\/\/subdomain.mydomain.com\/wp-content\/gallery\/moalboal-backpacker-lodge\/batch_PanagsamaBeach01.jpg","srcsets":{"original":"https:\/\/subdomain.mydomain.com\/wp-content\/gallery\/moalboal-backpacker-lodge\/batch_PanagsamaBeach01.jpg"}
 EOHTML;
 
 		// mock getResponseBody with testable HTML content
