@@ -1342,6 +1342,11 @@ class StaticHtmlOutput_UrlRequest
           $responseBody = str_replace('http://' . $newDomain, $newBaseUrl, $responseBody);
           $responseBody = str_replace('https://' . $newDomain, $newBaseUrl, $responseBody);
 
+          $responseBody = str_replace('https:\/\/' . $newDomain . '\/', str_replace('//', '\/\/', $newBaseUrl) . '\/', $responseBody);
+          $responseBody = str_replace('http:\/\/' . $newDomain . '\/', str_replace('//', '\/\/', $newBaseUrl) . '\/', $responseBody);
+
+
+
           // TODO: cater for protocol rel links
 
 			}
