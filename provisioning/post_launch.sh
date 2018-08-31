@@ -54,7 +54,6 @@ done
 # still requires buffer before accessible for wp cli
 sleep 5
 
-
 # override site URL from env var if set
 if [[ -z "${WPSTATICURL}" ]]; then
 	echo 'no site URL specified, use container IP'

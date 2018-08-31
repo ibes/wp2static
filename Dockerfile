@@ -1,13 +1,19 @@
 FROM wordpress:latest
 
+RUN echo 'bump cache'
+
 RUN touch /var/log/apache2/php_err.log && chown www-data:www-data /var/log/apache2/php_err.log
 COPY provisioning/php_error.ini /usr/local/etc/php/conf.d/php_error.ini
-COPY provisioning/newrelicconfig/* /usr/local/etc/php/conf.d/
 
 RUN apt-get update \
 && apt-get install -y inotify-tools rsync mysql-client iproute zlib1g-dev unzip vim mlocate wget gnupg iputils-ping \
 && rm -rf /var/lib/apt/lists/* \
 && docker-php-ext-install zip
+
+# Install Xdebug
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug \
+    && rm -rf /tmp/pear/
 
 # install wp cli
 RUN curl -L https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o /usr/local/bin/wp
@@ -21,5 +27,7 @@ COPY provisioning/*.sh /
 COPY provisioning/.env-vars /
 
 COPY provisioning/test_data/ /test_data
+
+COPY provisioning/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 COPY provisioning/install/plugins/* /plugins/
