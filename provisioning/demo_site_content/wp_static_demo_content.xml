@@ -17,13 +17,13 @@
  7. WordPress will then import each of the posts, pages, comments, categories, etc.
     contained in this file into your site.
 -->
-<!-- generator="WordPress/4.9.8" created="2018-08-30 22:36" -->
+<!-- generator="WordPress/4.9.8" created="2018-08-31 13:08" -->
 <rss version="2.0" xmlns:excerpt="http://wordpress.org/export/1.2/excerpt/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:wp="http://wordpress.org/export/1.2/">
   <channel>
 <title>wp plugindev</title>
 <link>http://172.18.0.3</link>
 <description>Just another WordPress site</description>
-<pubDate>Thu, 30 Aug 2018 22:36:35 +0000</pubDate>
+<pubDate>Fri, 31 Aug 2018 13:08:38 +0000</pubDate>
 <language>en-US</language>
 <wp:wxr_version>1.2</wp:wxr_version>
 <wp:base_site_url>http://172.18.0.3</wp:base_site_url>
@@ -71,7 +71,11 @@
   <dc:creator>admin</dc:creator>
   <guid isPermaLink="false">http://172.18.0.3/?p=5</guid>
   <description/>
-  <content:encoded><![CDATA[You can use the <a href="https://wordpress.org/plugins/wp-crontrol/">WP Crontrol</a> plugin to schedule the export of your static site.
+  <content:encoded><![CDATA[<a href="http://172.18.0.3/calibration-test-page-ensure-each-part-of-this-page-exports-properly/">Link to Calibration test</a>
+
+&nbsp;
+
+You can use the <a href="https://wordpress.org/plugins/wp-crontrol/">WP Crontrol</a> plugin to schedule the export of your static site.
 
 This feature is yet to be released into the official version of <a href="http://wordpress.org/plugins/static-html-output-plugin/">WP Static HTML Output Plugin</a>, but you can try it out by downloading the latest development version of the plugin from the <a href="http://github.com/leonstafford/wordpress-static-html-plugin">GitHub repository</a>.
 <h2>Scheduling your WordPress site to be exported as a static HTML site</h2>
@@ -152,7 +156,15 @@ A div with a background image URL set to a file from the theme dir, but not link
 <div></div>
 <div>This simulated cases like YooThemes, where an image cache dir is nested within the theme dir</div>
 <div></div>
-<div>Assert that the equivalent rewrite of wp-content/themes/twentyseventeen/cache/images/testsubdircrawling.png exists, ie  contents/ui/theme/cache/images/testsubdircrawling.png</div>]]></content:encoded>
+<div>Assert that the equivalent rewrite of wp-content/themes/twentyseventeen/cache/images/testsubdircrawling.png exists, ie  contents/ui/theme/cache/images/testsubdircrawling.png</div>
+<div></div>
+<div>Test 3 - ensuring that all files from wp-content nested dirs are successfully exported</div>
+<div></div>
+<div>This simulates for things like NextGen gallery, which places things in wp-content/gallery/.
+
+Look for the file in static site: contents/gallery/gallery-name/dynamic/image_from_siteroot_standalone_dir.png
+
+</div>]]></content:encoded>
   <excerpt:encoded><![CDATA[]]></excerpt:encoded>
   <wp:post_id>12</wp:post_id>
   <wp:post_date>2018-06-20 14:31:42</wp:post_date>
