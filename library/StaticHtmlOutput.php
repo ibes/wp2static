@@ -19,295 +19,30 @@ class StaticHtmlOutput_Controller {
 	protected function __construct() {}
 	protected function __clone() {}
 
-  // new options for simplifying CLI/Client based exports
-  protected $_selected_deployment_option;
-  protected $_baseUrl;
-  protected $_diffBasedDeploys;
-  protected $_target_folder;
-  protected $_rewriteWPCONTENT;
-  protected $_rewriteTHEMEROOT;
-  protected $_rewriteTHEMEDIR;
-  protected $_rewriteUPLOADS;
-  protected $_rewritePLUGINDIR;
-  protected $_rewriteWPINC;
-  protected $_sendViaGithub;
-  protected $_sendViaFTP;
-  protected $_sendViaS3;
-  protected $_sendViaNetlify;
-  protected $_sendViaDropbox;
-  protected $_additionalUrls;
-  protected $_dontIncludeAllUploadFiles;
-  protected $_outputDirectory;
-  protected $_targetFolder;
-  protected $_githubRepo;
-  protected $_githubPersonalAccessToken;
-  protected $_githubBranch;
-  protected $_githubPath;
-	protected $_useRelativeURLs;
-	protected $_useBaseHref;
-  protected $_useBasicAuth;
-  protected $_basicAuthUser;
-  protected $_basicAuthPassword;
-  protected $_bunnycdnPullZoneName;
-  protected $_bunnycdnAPIKey;
-  protected $_bunnycdnRemotePath;
-  protected $_cfDistributionId;
-  protected $_s3Key;
-  protected $_s3Secret;
-  protected $_s3Region;
-  protected $_s3Bucket;
-  protected $_s3RemotePath;
-  protected $_dropboxAccessToken;
-  protected $_dropboxFolder;
-  protected $_netlifySiteID;
-  protected $_netlifyPersonalAccessToken;
-  protected $_ftpServer;
-  protected $_ftpUsername;
-  protected $_ftpPassword;
-  protected $_ftpRemotePath;
-  protected $_useActiveFTP;
-  protected $_allowOfflineUsage;
-
   public function loadSettingsFromClientOrDatabase() {
-    // load settings via Client or from DB if run from CLI
+    $setting_keys = self::$_instance->_options->getSettingKeys();
+
     if (null !== (filter_input(INPUT_POST, 'selected_deployment_option'))) {
+      foreach($setting_keys as $setting) {
+        self::$_instance->{'_' . $setting} = filter_input(INPUT_POST, $setting); 
+      } 
 
-      // export being triggered via GUI, set all options from filtered posts
-      self::$_instance->_selected_deployment_option = filter_input(INPUT_POST, 'selected_deployment_option');
-      self::$_instance->_baseUrl = untrailingslashit(filter_input(INPUT_POST, 'baseUrl', FILTER_SANITIZE_URL));
-      self::$_instance->_diffBasedDeploys = filter_input(INPUT_POST, 'diffBasedDeploys');
-      self::$_instance->_sendViaGithub = filter_input(INPUT_POST, 'sendViaGithub');
-      self::$_instance->_sendViaFTP = filter_input(INPUT_POST, 'sendViaFTP');
-      self::$_instance->_sendViaS3 = filter_input(INPUT_POST, 'sendViaS3');
-      self::$_instance->_sendViaNetlify = filter_input(INPUT_POST, 'sendViaNetlify');
-      self::$_instance->_sendViaDropbox = filter_input(INPUT_POST, 'sendViaDropbox');
-      self::$_instance->_additionalUrls = filter_input(INPUT_POST, 'additionalUrls');
-      self::$_instance->_dontIncludeAllUploadFiles = filter_input(INPUT_POST, 'dontIncludeAllUploadFiles');
-      self::$_instance->_outputDirectory = filter_input(INPUT_POST, 'outputDirectory');
-      self::$_instance->_targetFolder = filter_input(INPUT_POST, 'targetFolder');
-      self::$_instance->_githubRepo = filter_input(INPUT_POST, 'githubRepo');
-      self::$_instance->_githubPersonalAccessToken = filter_input(INPUT_POST, 'githubPersonalAccessToken');
-      self::$_instance->_githubBranch = filter_input(INPUT_POST, 'githubBranch');
-      self::$_instance->_githubPath = filter_input(INPUT_POST, 'githubPath');
-      self::$_instance->_rewriteWPCONTENT = filter_input(INPUT_POST, 'rewriteWPCONTENT');
-      self::$_instance->_rewriteTHEMEROOT = filter_input(INPUT_POST, 'rewriteTHEMEROOT');
-      self::$_instance->_rewriteTHEMEDIR = filter_input(INPUT_POST, 'rewriteTHEMEDIR');
-      self::$_instance->_rewriteUPLOADS = filter_input(INPUT_POST, 'rewriteUPLOADS');
-      self::$_instance->_rewritePLUGINDIR = filter_input(INPUT_POST, 'rewritePLUGINDIR');
-      self::$_instance->_rewriteWPINC = filter_input(INPUT_POST, 'rewriteWPINC');
-      self::$_instance->_useRelativeURLs = filter_input(INPUT_POST, 'useRelativeURLs');
-      self::$_instance->_useBaseHref = filter_input(INPUT_POST, 'useBaseHref');
+      // exceptional naming
       self::$_instance->_useBasicAuth = filter_input(INPUT_POST, 'sendViaBasic');
-      self::$_instance->_basicAuthUser = filter_input(INPUT_POST, 'basicAuthUser');
-      self::$_instance->_basicAuthPassword = filter_input(INPUT_POST, 'basicAuthPassword');
-      self::$_instance->_bunnycdnPullZoneName = filter_input(INPUT_POST, 'bunnycdnPullZoneName');
-      self::$_instance->_bunnycdnAPIKey = filter_input(INPUT_POST, 'bunnycdnAPIKey');
-      self::$_instance->_bunnycdnRemotePath = filter_input(INPUT_POST, 'bunnycdnRemotePath');
-      self::$_instance->_cfDistributionId = filter_input(INPUT_POST, 'cfDistributionId');
-      self::$_instance->_s3Key = filter_input(INPUT_POST, 's3Key');
-      self::$_instance->_s3Secret = filter_input(INPUT_POST, 's3Secret');
-      self::$_instance->_s3Region = filter_input(INPUT_POST, 's3Region');
-      self::$_instance->_s3Bucket = filter_input(INPUT_POST, 's3Bucket');
-      self::$_instance->_s3RemotePath = filter_input(INPUT_POST, 's3RemotePath');
-      self::$_instance->_dropboxAccessToken = filter_input(INPUT_POST, 'dropboxAccessToken');
-      self::$_instance->_dropboxFolder = filter_input(INPUT_POST, 'dropboxFolder');
-      self::$_instance->_netlifySiteID = filter_input(INPUT_POST, 'netlifySiteID');
-      self::$_instance->_netlifyPersonalAccessToken = filter_input(INPUT_POST, 'netlifyPersonalAccessToken');
-      self::$_instance->_ftpServer = filter_input(INPUT_POST, 'ftpServer');
-      self::$_instance->_ftpUsername = filter_input(INPUT_POST, 'ftpUsername');
-      self::$_instance->_ftpPassword = filter_input(INPUT_POST, 'ftpPassword');
-      self::$_instance->_ftpRemotePath = filter_input(INPUT_POST, 'ftpRemotePath');
-      self::$_instance->_useActiveFTP = filter_input(INPUT_POST, 'useActiveFTP');
-      self::$_instance->_allowOfflineUsage = filter_input(INPUT_POST, 'allowOfflineUsage');
-
     } else {
       // export being triggered via Cron/CLI, load settings from DB
       parse_str(self::$_instance->_options->getOption('static-export-settings'), $pluginOptions);
 
-      if ( array_key_exists('sendViaGithub', $pluginOptions )) {
-        self::$_instance->_sendViaGithub = $pluginOptions['sendViaGithub'];
-      }
+      foreach($setting_keys as $setting) {
+        self::$_instance->{'_' . $setting} = filter_input(INPUT_POST, $setting); 
+        if ( array_key_exists($setting, $pluginOptions )) {
+          self::$_instance->{'_' . $setting} = $pluginOptions[$setting];
+        }
+      } 
 
-      if ( array_key_exists('diffBasedDeploys', $pluginOptions )) {
-        self::$_instance->_diffBasedDeploys = $pluginOptions['diffBasedDeploys'];
-      }
-
-      if ( array_key_exists('sendViaFTP', $pluginOptions )) {
-        self::$_instance->_sendViaFTP = $pluginOptions['sendViaFTP'];
-      }
-
-      if ( array_key_exists('sendViaS3', $pluginOptions )) {
-        self::$_instance->_sendViaS3 = $pluginOptions['sendViaS3'];
-      }
-
-      if ( array_key_exists('sendViaNetlify', $pluginOptions )) {
-        self::$_instance->_sendViaNetlify = $pluginOptions['sendViaNetlify'];
-      }
-
-      if ( array_key_exists('sendViaDropbox', $pluginOptions )) {
-        self::$_instance->_sendViaDropbox = $pluginOptions['sendViaDropbox'];
-      }
-
-      if ( array_key_exists('additionalUrls', $pluginOptions )) {
-        self::$_instance->_additionalUrls = $pluginOptions['additionalUrls'];
-      }
-
-      if ( array_key_exists('dontIncludeAllUploadFiles', $pluginOptions )) {
-        self::$_instance->_dontIncludeAllUploadFiles = $pluginOptions['dontIncludeAllUploadFiles'];
-      }
-
-      if ( array_key_exists('outputDirectory', $pluginOptions )) {
-        self::$_instance->_outputDirectory = $pluginOptions['outputDirectory'];
-      }
-
-      if ( array_key_exists('targetFolder', $pluginOptions )) {
-        self::$_instance->_targetFolder = $pluginOptions['targetFolder'];
-      }
-
-      if ( array_key_exists('selected_deployment_option', $pluginOptions )) {
-        self::$_instance->_selected_deployment_option = $pluginOptions['selected_deployment_option'];
-      }
-
-      if ( array_key_exists('githubRepo', $pluginOptions )) {
-        self::$_instance->_githubRepo = $pluginOptions['githubRepo'];
-      }
-
-      if ( array_key_exists('githubPersonalAccessToken', $pluginOptions )) {
-        self::$_instance->_githubPersonalAccessToken = $pluginOptions['githubPersonalAccessToken'];
-      }
-
-      if ( array_key_exists('githubBranch', $pluginOptions )) {
-        self::$_instance->_githubBranch = $pluginOptions['githubBranch'];
-      }
-
-      if ( array_key_exists('githubPath', $pluginOptions )) {
-        self::$_instance->_githubPath = $pluginOptions['githubPath'];
-      }
-
-      if ( array_key_exists('rewriteWPCONTENT', $pluginOptions )) {
-        self::$_instance->_rewriteWPCONTENT = $pluginOptions['rewriteWPCONTENT'];
-      }
-
-      if ( array_key_exists('rewriteTHEMEROOT', $pluginOptions )) {
-        self::$_instance->_rewriteTHEMEROOT = $pluginOptions['rewriteTHEMEROOT'];
-      }
-
-      if ( array_key_exists('rewriteTHEMEDIR', $pluginOptions )) {
-        self::$_instance->_rewriteTHEMEDIR = $pluginOptions['rewriteTHEMEDIR'];
-      }
-
-      if ( array_key_exists('rewriteUPLOADS', $pluginOptions )) {
-        self::$_instance->_rewriteUPLOADS = $pluginOptions['rewriteUPLOADS'];
-      }
-
-      if ( array_key_exists('rewritePLUGINDIR', $pluginOptions )) {
-        self::$_instance->_rewritePLUGINDIR = $pluginOptions['rewritePLUGINDIR'];
-      }
-
-      if ( array_key_exists('rewriteWPINC', $pluginOptions )) {
-        self::$_instance->_rewriteWPINC = $pluginOptions['rewriteWPINC'];
-      }
-
-      if ( array_key_exists('useRelativeURLs', $pluginOptions )) {
-        self::$_instance->_useRelativeURLs = $pluginOptions['useRelativeURLs'];
-      }
-      
-      if ( array_key_exists('useBaseHref', $pluginOptions )) {
-        self::$_instance->_useBaseHref = $pluginOptions['useBaseHref'];
-      }
-
-      if ( array_key_exists('baseUrl', $pluginOptions )) {
-        self::$_instance->_baseUrl = untrailingslashit($pluginOptions['baseUrl']);
-      }
       if ( array_key_exists('sendViaBasic', $pluginOptions )) {
         self::$_instance->_useBasicAuth = $pluginOptions['sendViaBasic'];
       }
-
-      if ( array_key_exists('basicAuthUser', $pluginOptions )) {
-        self::$_instance->_basicAuthUser = $pluginOptions['basicAuthUser'];
-      }
-
-      if ( array_key_exists('basicAuthPassword', $pluginOptions )) {
-        self::$_instance->_basicAuthUser = $pluginOptions['basicAuthUser'];
-      }
-
-      if ( array_key_exists('bunnycdnPullZoneName', $pluginOptions )) {
-        self::$_instance->_bunnycdnPullZoneName = $pluginOptions['bunnycdnPullZoneName'];
-      }
-
-      if ( array_key_exists('bunnycdnAPIKey', $pluginOptions )) {
-        self::$_instance->_bunnycdnAPIKey = $pluginOptions['bunnycdnAPIKey'];
-      }
-
-      if ( array_key_exists('bunnycdnRemotePath', $pluginOptions )) {
-        self::$_instance->_bunnycdnRemotePath = $pluginOptions['bunnycdnRemotePath'];
-      }
-
-      if ( array_key_exists('cfDistributionId', $pluginOptions )) {
-        self::$_instance->_cfDistributionId = $pluginOptions['cfDistributionId'];
-      }
-
-      if ( array_key_exists('s3Key', $pluginOptions )) {
-        self::$_instance->_s3Key = $pluginOptions['s3Key'];
-      }
-
-      if ( array_key_exists('s3Secret', $pluginOptions )) {
-        self::$_instance->_s3Secret = $pluginOptions['s3Secret'];
-      }
-
-      if ( array_key_exists('s3Region', $pluginOptions )) {
-        self::$_instance->_s3Region = $pluginOptions['s3Region'];
-      }
-
-      if ( array_key_exists('s3Bucket', $pluginOptions )) {
-        self::$_instance->_s3Bucket = $pluginOptions['s3Bucket'];
-      }
-
-      if ( array_key_exists('s3RemotePath', $pluginOptions )) {
-        self::$_instance->_s3RemotePath = $pluginOptions['s3RemotePath'];
-      }
-
-      if ( array_key_exists('dropboxFolder', $pluginOptions )) {
-        self::$_instance->_dropboxFolder = $pluginOptions['dropboxFolder'];
-      }
-
-      if ( array_key_exists('dropboxAccessToken', $pluginOptions )) {
-        self::$_instance->_dropboxAccessToken = $pluginOptions['dropboxAccessToken'];
-      }
-
-      if ( array_key_exists('netlifySiteID', $pluginOptions )) {
-        self::$_instance->_netlifySiteID = $pluginOptions['netlifySiteID'];
-      }
-
-      if ( array_key_exists('netlifyPersonalAccessToken', $pluginOptions )) {
-        self::$_instance->_netlifyPersonalAccessToken = $pluginOptions['netlifyPersonalAccessToken'];
-      }
-
-      if ( array_key_exists('ftpServer', $pluginOptions )) {
-        self::$_instance->_ftpServer = $pluginOptions['ftpServer'];
-      }
-
-      if ( array_key_exists('ftpUsername', $pluginOptions )) {
-        self::$_instance->_ftpUsername = $pluginOptions['ftpUsername'];
-      }
-
-      if ( array_key_exists('ftpPassword', $pluginOptions )) {
-        self::$_instance->_ftpPassword = $pluginOptions['ftpPassword'];
-      }
-
-      if ( array_key_exists('ftpRemotePath', $pluginOptions )) {
-        self::$_instance->_ftpRemotePath = $pluginOptions['ftpRemotePath'];
-      }
-
-      if ( array_key_exists('useActiveFTP', $pluginOptions )) {
-        self::$_instance->_useActiveFTP = $pluginOptions['useActiveFTP'];
-      }
-
-      if ( array_key_exists('allowOfflineUsage', $pluginOptions )) {
-        self::$_instance->_allowOfflineUsage = $pluginOptions['allowOfflineUsage'];
-      }
-
-
     }
   } 
 

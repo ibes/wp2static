@@ -43,4 +43,54 @@ class StaticHtmlOutput_Options
 	public function delete() {
 		return delete_option($this->_optionKey);
 	}
+
+  public function getSettingKeys() {
+    return array(
+      'selected_deployment_option',
+      'baseUrl',
+      'diffBasedDeploys',
+      'sendViaGithub',
+      'sendViaFTP',
+      'sendViaS3',
+      'sendViaNetlify',
+      'sendViaDropbox',
+      'additionalUrls',
+      'dontIncludeAllUploadFiles',
+      'outputDirectory',
+      'targetFolder',
+      'githubRepo',
+      'githubPersonalAccessToken',
+      'githubBranch',
+      'githubPath',
+      'rewriteWPCONTENT',
+      'rewriteTHEMEROOT',
+      'rewriteTHEMEDIR',
+      'rewriteUPLOADS',
+      'rewritePLUGINDIR',
+      'rewriteWPINC',
+      'useRelativeURLs',
+      'useBaseHref',
+      'basicAuthUser',
+      'basicAuthPassword',
+      'bunnycdnPullZoneName',
+      'bunnycdnAPIKey',
+      'bunnycdnRemotePath',
+      'cfDistributionId',
+      's3Key',
+      's3Secret',
+      's3Region',
+      's3Bucket',
+      's3RemotePath',
+      'dropboxAccessToken',
+      'dropboxFolder',
+      'netlifySiteID',
+      'netlifyPersonalAccessToken',
+      'ftpServer',
+      'ftpUsername',
+      'ftpPassword',
+      'ftpRemotePath',
+      'useActiveFTP',
+      'allowOfflineUsage'
+    );
+  }
 }
