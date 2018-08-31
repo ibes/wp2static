@@ -146,7 +146,7 @@ class StaticHtmlOutput_FilesHelper
         return count($urlsQueue);
     }
 
-    public function getAllWPPostURLs(){
+    public static function getAllWPPostURLs(){
         global $wpdb;
 
 		// TODO: is this the most optimum call?

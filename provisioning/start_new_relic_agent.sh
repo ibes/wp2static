@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# Replace real app details here
+if [ -n "$NR_LICENSE_KEY" ]; then
+    echo "INFO: Using newrelic license ${NR_LICENSE_KEY:0:8}..."
+    sed -i "s|%%NR_LICENSE_KEY%%|$NR_LICENSE_KEY|g" /usr/local/etc/php/conf.d/newrelic.ini
+else
+    echo "INFO: NR_LICENSE_KEY is not set. Can't connect to newrelic servers..."
+fi
+
+if [ -n "$NR_APP_NAME" ]; then
+    echo "INFO: Using newrelic app name $NR_APP_NAME..."
+    sed -i "s|%%NR_APP_NAME%%|$NR_APP_NAME|g" /usr/local/etc/php/conf.d/newrelic.ini
+else
+    echo "INFO: NR_APP_NAME is not set. Using 'PHP application' instead..."
+fi
