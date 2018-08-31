@@ -124,6 +124,12 @@ class StaticHtmlOutput_FilesHelper
 					explode("\n", $additionalUrls)
 					));
 
+    // add known dirs needed from site root 
+    $urlsQueue = array_unique(array_merge(
+        $urlsQueue,
+        self::getListOfLocalFilesByUrl(array(content_url() . '/gallery/')) // NextGen Gallery
+    ));
+
 		if ( $includeAllUploadDirFiles ) {
             //$this->wsLog('NOT INCLUDING ALL FILES FROM UPLOADS DIR');
 			$urlsQueue = array_unique(array_merge(

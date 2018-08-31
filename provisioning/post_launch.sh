@@ -177,6 +177,9 @@ cp /test_data/1px_yellow_background.png /var/www/html/wp-content/themes/twentyse
 mkdir -p /var/www/html/wp-content/themes/twentyseventeen/cache/images/
 cp /test_data/1px_yellow_background.png /var/www/html/wp-content/themes/twentyseventeen/cache/images/testsubdircrawling.png
 
+mkdir -p /var/www/html/wp-content/gallery/gallery-name/dynamic/
+cp /test_data/1px_yellow_background.png /var/www/html/wp-content/gallery/gallery-name/dynamic/image_from_siteroot_standalone_dir.png
+
 # OPTIONAL: install latest static plugin from WP plugins site vs local src
 #wp --allow-root plugin install static-html-output-plugin --activate
 
