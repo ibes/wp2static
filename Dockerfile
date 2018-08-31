@@ -9,28 +9,6 @@ RUN apt-get update \
 && rm -rf /var/lib/apt/lists/* \
 && docker-php-ext-install zip
 
-# start newrelix
-ARG NR_INSTALL_SILENT=1
-
-# Install newrelic for php
-RUN \
-    # Add newrelic as apt-get source
-    echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' > /etc/apt/sources.list.d/newrelic.list \
-    && curl -L https://download.newrelic.com/548C16BF.gpg | apt-key add - \
-
-    # Install package from newrelic
-    && apt-get update \
-    && apt-get install newrelic-php5 -y \
-
-    # Cleanup
-    && apt-get clean \
-    && apt-get autoremove \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /var/log/apt/*
-
-# end newrelix
-
-# trigger rebuild
-
 # install wp cli
 RUN curl -L https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar -o /usr/local/bin/wp
 RUN chmod +x /usr/local/bin/wp

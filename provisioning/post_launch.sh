@@ -103,8 +103,6 @@ else
 fi
 
 
-# update newrelic php ini file
-/start_new_relic_agent.sh
 
 # sh: 1: -t: not found
 # error around here
