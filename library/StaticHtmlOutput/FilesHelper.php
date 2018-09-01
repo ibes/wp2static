@@ -94,17 +94,9 @@ class StaticHtmlOutput_FilesHelper
 		global $blog_id;
 		set_time_limit(0);
 
-
-		$exporter = wp_get_current_user();
-
 		// setting path to store the archive dir path
 
 		$archiveName = $outputPath . '/' . $pluginHook . '-' . $blog_id . '-' . time();
-
-		// append username if done via UI
-		if ( $exporter->user_login ) {
-			$archiveName .= '-' . $exporter->user_login;
-		}
 
 		$archiveDir = $archiveName . '/';
 
