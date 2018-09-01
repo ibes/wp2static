@@ -13,3 +13,5 @@ plugin_options_backup.sql
 /setests/screenshot.png
 
 static-html-output-plugin.zip
+.idea/
+fullapp
