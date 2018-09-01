@@ -82,7 +82,7 @@ class StaticHtmlOutput_FilesHelper
     return $files;
   }
 
-	public function buildInitialFileList(
+	public static function buildInitialFileList(
 		$viaCLI = false, 
 		$additionalUrls, 
 		$uploadsPath, 

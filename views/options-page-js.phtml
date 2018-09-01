@@ -28,31 +28,6 @@ jQuery(document).ready(function($){
 
   $('#viewErrorLogButton').attr('href', logFileURL);
 
-	function callToAction() {
-		// check how many successful exports and present user with a relevant call to action
-        $('.hiddenActionField').val('wp_static_html_output_ajax');
-        $('#hiddenAJAXAction').val('get_number_of_successes');
-        archives = $('.options-form');
-        newSettings = $(".options-form").serialize();
-        $(".hiddenSettingsField").val(newSettings);
-        data = $(archives[0]).serialize();
-        $.ajax({
-            url: ajaxurl,
-            data: data,
-            dataType: 'html',
-            method: 'POST',
-            success: function(number_of_successes) {
-				// get back to main execution
-				processExportTargets();
-            },
-            error: function(serverResponse) {
-				console.log('# successes:');
-				console.log(serverResponse);
-            }
-        });
-
-	}
-	
     function notifyMe() {
       if (!Notification) {
         alert('All exports are complete!.'); 
@@ -527,37 +502,8 @@ jQuery(document).ready(function($){
 		exportTargets = [];
 	
         $('.hiddenActionField').val('wp_static_html_output_ajax');
-        $('#hiddenAJAXAction').val('capture_last_deployment');
+        $('#hiddenAJAXAction').val('trigger_export_from_ui');
         archives = $('.options-form');
-
-        if ($('#sendViaGithub').attr('checked') == 'checked') {
-            exportTargets.push('GITHUB');
-        }
-        if ($('#sendViaFTP').attr('checked') == 'checked') {
-            exportTargets.push('FTP');
-        }
-        if ($('#sendViaBUNNYCDN').attr('checked') == 'checked') {
-            exportTargets.push('BUNNYCDN');
-        }
-        if ($('#sendViaDropbox').attr('checked') == 'checked') {
-            exportTargets.push('DROPBOX');
-        }
-        if ($('#sendViaS3').attr('checked') == 'checked') {
-            exportTargets.push('S3');
-        }
-        if ($('#sendViaNetlify').attr('checked') == 'checked') {
-            exportTargets.push('NETLIFY');
-        }
-
-		// always run cleanup "exportTarget" (TODO: naming to be improved)
-		exportTargets.push('TEARDOWN');
-
-		// record successful exports into the db
-		exportTargets.push('RECORDSUCCESS');
-
-		// call user to action based on number of exports
-		exportTargets.push('CALLTOACTION');
-
         data = $(archives[0]).serialize();
         $.ajax({
             url: ajaxurl,
@@ -565,11 +511,7 @@ jQuery(document).ready(function($){
             dataType: 'html',
             method: 'POST',
             success: function(serverResponse) {
-				if (current_deployment_method == 'zip' || current_deployment_method == 'netlify') {
-					doAJAXExport('cleanup_working_files', 'cleanup_leftover_archives', 'start_export', 'crawl_site', 'create_symlink_to_latest_archive', 'post_process_archive_dir', 'create_zip');
-				} else {
-					doAJAXExport('cleanup_working_files', 'cleanup_leftover_archives', 'start_export', 'crawl_site', 'create_symlink_to_latest_archive', 'post_process_archive_dir' );
-				}
+              console.log('deployment has been started and got something back from server');
             },
             error: ajaxErrorHandler
         });
@@ -586,50 +528,9 @@ jQuery(document).ready(function($){
 
     function processExportTargets () {
 		// TODO: optimisation: just call doAJAXExport with shifted arr element (req's consistent naming of exports)
+    }
 
-		if( exportTargets.length > 0) {
-			switch(target = exportTargets.shift()) {
-				case 'GITHUB':
-					doAJAXExport('github_prepare_export', 'github_upload_blobs', 'github_finalise_export');
-					break;
-
-				case 'FTP':
-					doAJAXExport('ftp_prepare_export', 'ftp_transfer_files');
-					break;
-
-				case 'BUNNYCDN':
-					doAJAXExport('bunnycdn_prepare_export', 'bunnycdn_transfer_files', 'bunnycdn_purge_cache');
-					break;
-
-				case 'S3':
-					doAJAXExport('s3_prepare_export', 's3_transfer_files', 'cloudfront_invalidate_all_items');
-					break;
-
-				case 'DROPBOX':
-					doAJAXExport('dropbox_prepare_export', 'dropbox_do_export');
-					break;
-
-				case 'NETLIFY':
-					doAJAXExport('netlify_do_export');
-					break;
-
-				case 'TEARDOWN':
-					doAJAXExport('post_export_teardown');
-					break;
-
-				case 'RECORDSUCCESS':
-					doAJAXExport('record_successful_export');
-					break;
-
-				case 'CALLTOACTION':
-					callToAction();
-					break;
-
-				default:
-          console.log('unexpected return value from export target processing');
-					break; 
-			}
-		} else {
+		function successfulDeployHandler() {
 			// if zip was selected, call to get zip name and enable the button with the link to download
 			if (current_deployment_method === 'zip') {
 				
@@ -661,7 +562,6 @@ jQuery(document).ready(function($){
 			$('#progress').hide();
 			notifyMe();
 		}
-    }
 
     function millisToMinutesAndSeconds(millis) {
       var minutes = Math.floor(millis / 60000);
@@ -695,15 +595,6 @@ jQuery(document).ready(function($){
         startExport();
     });
 
-    $('.wrap').on('click', '.removeTargetButton', function(event) {
-        event.preventDefault();
-
-        if ($('.options-form').length === 1) {
-            alert("Sorry, got to keep at least one settings block around. But, you can delete the values if you like");
-        } else {
-            $(event.target).closest('.options-form').remove();
-        }
-    });
 
     $('.wrap').on('click', '.resetDefaultSettingsButton', function(event) {
         event.preventDefault();
@@ -728,9 +619,7 @@ jQuery(document).ready(function($){
 				alert("Error encountered in trying to reset settings. Please try refreshing the page.");
             }
         });
-
 		// clean load page, just to be sure all fields are refreshed
-
     });
 
     $('.wrap').on('click', '.saveSettingsButton', function(event) {
@@ -739,17 +628,12 @@ jQuery(document).ready(function($){
         saveOptions();
     });
 
-    $('.wrap').on('click', '.addAnotherTargetButton', function(event) {
-        event.preventDefault();
-       $('.options-form:last').clone().insertAfter('.options-form:last');
-    });
 
+    // TODO: move below setup stuff into here
+    function loadPreviousSettings() {
+      return true;
 
-	// TODO: move below setup stuff into here
-	function loadPreviousSettings() {
-		return true;
-
-	}
+    }
 
     //  load existing settings
     if (settings != 'no existing settings found') {

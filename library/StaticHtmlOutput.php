@@ -23,6 +23,7 @@ class StaticHtmlOutput_Controller {
     $setting_keys = self::$_instance->_options->getSettingKeys();
 
     if (null !== (filter_input(INPUT_POST, 'selected_deployment_option'))) {
+      error_log('loading all settings from post');
       foreach($setting_keys as $setting) {
         self::$_instance->{'_' . $setting} = filter_input(INPUT_POST, $setting); 
       } 
@@ -30,6 +31,7 @@ class StaticHtmlOutput_Controller {
       // exceptional naming
       self::$_instance->_useBasicAuth = filter_input(INPUT_POST, 'sendViaBasic');
     } else {
+      error_log('loading all settings from DB');
       // export being triggered via Cron/CLI, load settings from DB
       parse_str(self::$_instance->_options->getOption('static-export-settings'), $pluginOptions);
 
@@ -57,8 +59,7 @@ class StaticHtmlOutput_Controller {
         self::$_instance->_uploadsPath = $tmp_var_to_hold_return_array['basedir'];
         self::$_instance->_uploadsURL = $tmp_var_to_hold_return_array['baseurl'];
 
-        self::$_instance->loadSettingsFromClientOrDatabase();
-
+        //self::$_instance->loadSettingsFromClientOrDatabase();
 		}
 
 		return self::$_instance;
@@ -895,6 +896,14 @@ public function crawlABitMore($viaCLI = false) {
       // wp_mail( $to, $subject, $body, $headers );
     }
 
+
+    public function trigger_export_from_ui() {
+      error_log('export triggered from UI');
+
+      // look at doExportWithoutGUI for correct sequence to trigger
+    }
+
+
     public function doExportWithoutGUI() {
       if ( wpsho_fr()->is_plan('professional_edition') ) {
     
@@ -908,8 +917,37 @@ public function crawlABitMore($viaCLI = false) {
         $this->post_export_teardown();
         $this->record_successful_export();
 
-
         //$this->create_zip();
+/*
+ ********************************************
+
+ current order when triggering export from UI:'
+
+capture_last_deployment
+cleanup_working_files
+cleanup_leftover_archives
+start_export
+crawl_site
+create_symlink_to_latest_archive
+post_process_archive_dir
+
+ZIP || NETLIFY ? create zip
+  create_zip
+
+
+github_prepare_export, github_upload_blobs, github_finalise_export
+ftp_prepare_export, ftp_transfer_files
+bunnycdn_prepare_export, bunnycdn_transfer_files, bunnycdn_purge_cache
+s3_prepare_export, s3_transfer_files, cloudfront_invalidate_all_items
+dropbox_prepare_export, dropbox_do_export
+netlify_do_export
+
+deploy particular mathod
+post_export_teardown
+      
+ ********************************************
+ */
+
       }
     }
 
