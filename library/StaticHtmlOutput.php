@@ -900,7 +900,35 @@ public function crawlABitMore($viaCLI = false) {
     public function trigger_export_from_ui() {
       error_log('export triggered from UI');
 
-      // look at doExportWithoutGUI for correct sequence to trigger
+$this->capture_last_deployment();
+$this->cleanup_working_files();
+$this->cleanup_leftover_archives();
+$this->start_export();
+$this->crawl_site();
+$this->create_symlink_to_latest_archive();
+$this->post_process_archive_dir();
+
+if (in_array($this->_selected_deployment_option, array('zip', 'netlify'))) {
+  $this->create_zip();
+}
+
+$this->github_prepare_export();
+$this->github_upload_blobs();
+$this->github_finalise_export();
+$this->ftp_prepare_export();
+$this->ftp_transfer_files();
+$this->bunnycdn_prepare_export();
+$this->bunnycdn_transfer_files();
+$this->bunnycdn_purge_cache();
+$this->s3_prepare_export();
+$this->s3_transfer_files();
+$this->cloudfront_invalidate_all_items();
+$this->dropbox_prepare_export();
+$this->dropbox_do_export();
+$this->netlify_do_export();
+
+$this->post_export_teardown();
+      
     }
 
 
@@ -913,76 +941,15 @@ public function crawlABitMore($viaCLI = false) {
         $this->crawl_site(true);
         $this->create_symlink_to_latest_archive(true);
         $this->post_process_archive_dir(true);
+
+        if (in_array($this->_selected_deployment_option, array('zip', 'netlify'))) {
+          $this->create_zip();
+        }
+
         $this->deploy();
         $this->post_export_teardown();
-        $this->record_successful_export();
-
-        //$this->create_zip();
-/*
- ********************************************
-
- current order when triggering export from UI:'
-
-capture_last_deployment
-cleanup_working_files
-cleanup_leftover_archives
-start_export
-crawl_site
-create_symlink_to_latest_archive
-post_process_archive_dir
-
-ZIP || NETLIFY ? create zip
-  create_zip
-
-
-github_prepare_export, github_upload_blobs, github_finalise_export
-ftp_prepare_export, ftp_transfer_files
-bunnycdn_prepare_export, bunnycdn_transfer_files, bunnycdn_purge_cache
-s3_prepare_export, s3_transfer_files, cloudfront_invalidate_all_items
-dropbox_prepare_export, dropbox_do_export
-netlify_do_export
-
-deploy particular mathod
-post_export_teardown
-      
- ********************************************
- */
-
       }
     }
-
-	public function get_number_of_successes($viaCLI = false) {
-		global $wpdb;
-
-		$successes = $wpdb->get_var( 'SELECT `value` FROM '.$wpdb->base_prefix.'wpstatichtmloutput_meta WHERE name = \'successful_export_count\' ');
-
-		if ($successes > 0) {
-
-			echo $successes;
-		} else {
-			echo '';
-		}
-	}
-
-	public function record_successful_export($viaCLI = false) {
-		// increment a value in the DB 
-		global $wpdb;
-		// create meta table if not exists
-		$wpdb->query('CREATE TABLE IF NOT EXISTS '.$wpdb->base_prefix.'wpstatichtmloutput_meta (`id` int(11) NOT NULL auto_increment, `name` varchar(255) NOT NULL, `value` varchar(255) NOT NULL, PRIMARY KEY (id))');
-
-		// check for successful_export_count
-		if ( $wpdb->get_var( 'SELECT `value` FROM '.$wpdb->base_prefix.'wpstatichtmloutput_meta WHERE name = \'successful_export_count\' ') ) {
-			// if exists, increase by one
-			$wpdb->get_var( 'UPDATE '.$wpdb->base_prefix.'wpstatichtmloutput_meta SET `value` = `value` + 1 WHERE `name` = \'successful_export_count\' ') ;
-
-		} else {
-			// else insert the first success	
-			$wpdb->query('INSERT INTO '.$wpdb->base_prefix.'wpstatichtmloutput_meta SET `value` = 1 , `name` = \'successful_export_count\' ');
-		}
-
-		echo 'SUCCESS';
-
-	}	
 
 	public function reset_default_settings() {
 		$this->_options
