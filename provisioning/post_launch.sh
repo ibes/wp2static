@@ -169,12 +169,13 @@ else
 
   mkdir -p /var/www/images/ 
 
-  echo "importing  ${DUMMY_POSTS_PAGES_TO_CREATE} images"
-  until [  ${DUMMY_POSTS_PAGES_TO_CREATE} -lt 1 ]; do
-    echo "${DUMMY_POSTS_PAGES_TO_CREATE} remaining"
-    cp /var/www/html/wp-content/themes/twentyseventeen/assets/images/header.jpg /var/www/images/${DUMMY_POSTS_PAGES_TO_CREATE}.png
-    wp --allow-root media import /var/www/images/${DUMMY_POSTS_PAGES_TO_CREATE}.png --post_id=${DUMMY_POSTS_PAGES_TO_CREATE} --title="A downloaded picture" --featured_image
-    let DUMMY_POSTS_PAGES_TO_CREATE=DUMMY_POSTS_PAGES_TO_CREATE-1
+  echo "importing  ${DUMMY_IMAGES_TO_CREATE} images"
+  until [  ${DUMMY_IMAGES_TO_CREATE} -lt 1 ]; do
+    # TODO: create a bunch of nested dirs for each image
+    echo "${DUMMY_IMAGES_TO_CREATE} remaining"
+    cp /var/www/html/wp-content/themes/twentyseventeen/assets/images/header.jpg /var/www/images/${DUMMY_IMAGES_TO_CREATE}.png
+    wp --allow-root media import /var/www/images/${DUMMY_IMAGES_TO_CREATE}.png --post_id=${DUMMY_IMAGES_TO_CREATE} --title="A downloaded picture" --featured_image
+    let DUMMY_IMAGES_TO_CREATE=DUMMY_IMAGES_TO_CREATE-1
   done
 fi
 
