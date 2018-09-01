@@ -31,3 +31,5 @@ COPY provisioning/test_data/ /test_data
 COPY provisioning/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 COPY provisioning/install/plugins/* /plugins/
+
+COPY provisioning/webgrind-1.5.0/ /webgrind/
