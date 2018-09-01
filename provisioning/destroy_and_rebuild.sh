@@ -21,7 +21,7 @@ sudo docker network create --subnet=172.18.0.0/16 devwp
 
 sudo docker build -t leonstafford/wordpress-static-html-plugin:latest . 
 sudo docker run --name devmysql  --net devwp -e MYSQL_ROOT_PASSWORD=banana -d mariadb
-sudo docker run --name plugindevwp  --net devwp  --ip 172.18.0.3 --env-file ./provisioning/.env-vars --link devmysql:mysql $INSTALL_PATH_OVERRIDE -p 8091:80 -d -v $(pwd):/app leonstafford/wordpress-static-html-plugin
+sudo docker run --name plugindevwp  --net devwp  --ip 172.18.0.3 --env-file ./provisioning/.env-vars --link devmysql:mysql $INSTALL_PATH_OVERRIDE -p 8091:80 -d -v ~/Desktop/cachegrind:/tmp/cachegrind -v $(pwd):/app leonstafford/wordpress-static-html-plugin
 
 
 sudo docker run --name phpmyadmin  --net devwp -d --link devmysql:db -p 3008:80 phpmyadmin/phpmyadmin
