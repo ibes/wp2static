@@ -159,8 +159,6 @@ wp --allow-root media import /app/provisioning/demo_site_content/images/*.jpg
 wp --allow-root import /app/provisioning/demo_site_content/wp_static_demo_content.xml --authors=create
 
 
-wp allow-root package install git@github.com:aaemnnosttv/wp-cli-media-generate-command.git
-
 if [ -z "${DUMMY_POSTS_PAGES_TO_CREATE}" ]; then 
 	echo "not creating any dummy data"; 
 	cd /var/www/html
@@ -168,7 +166,16 @@ else
 	echo "generating dummy post data: ${DUMMY_POSTS_PAGES_TO_CREATE}"; 
   wp --allow-root post generate --count=${DUMMY_POSTS_PAGES_TO_CREATE} --post_type=page
   wp --allow-root post generate --count=${DUMMY_POSTS_PAGES_TO_CREATE} --post_type=post
-  wp --allow-root media generate image --count=${DUMMY_POSTS_PAGES_TO_CREATE}
+
+  mkdir -p /var/www/images/ 
+
+  echo "importing  ${DUMMY_POSTS_PAGES_TO_CREATE} images"
+  until [  ${DUMMY_POSTS_PAGES_TO_CREATE} -lt 1 ]; do
+    echo "${DUMMY_POSTS_PAGES_TO_CREATE} remaining"
+    cp /var/www/html/wp-content/themes/twentyseventeen/assets/images/header.jpg /var/www/images/${DUMMY_POSTS_PAGES_TO_CREATE}.png
+    wp --allow-root media import /var/www/images/${DUMMY_POSTS_PAGES_TO_CREATE}.png --post_id=${DUMMY_POSTS_PAGES_TO_CREATE} --title="A downloaded picture" --featured_image
+    let DUMMY_POSTS_PAGES_TO_CREATE=DUMMY_POSTS_PAGES_TO_CREATE-1
+  done
 fi
 
 
