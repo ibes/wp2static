@@ -641,6 +641,7 @@ public function crawlABitMore($viaCLI = false) {
 	}
 
     public function deploy($viaCLI = false) {
+      error_log('deploying: ' . $this->_selected_deployment_option);
       switch($this->_selected_deployment_option) {
         case 'folder':
           $this->copyStaticSiteToPublicFolder();
@@ -776,14 +777,21 @@ public function crawlABitMore($viaCLI = false) {
 
         self::$_instance->loadSettingsFromClientOrDatabase();
 
-        $this->capture_last_deployment();
-        $this->cleanup_working_files();
+        //$this->capture_last_deployment();
+        //$this->cleanup_working_files();
+        error_log('cleanup_leftover_archives export');
         $this->cleanup_leftover_archives();
+        error_log('start export');
         $this->start_export();
+        error_log('crawl_site');
         $this->crawl_site();
+        error_log('create_symlink_to_latest_archive');
         $this->create_symlink_to_latest_archive();
+        error_log('post_process_archive_dir');
         $this->post_process_archive_dir();
+        error_log('deploy');
         $this->deploy();
+        error_log('post_export_teardown');
         $this->post_export_teardown();
 
         echo 'SUCCESS';
@@ -835,6 +843,10 @@ public function crawlABitMore($viaCLI = false) {
 
     public function post_process_archive_dir() {
         $archiveDir = untrailingslashit(file_get_contents($this->_uploadsPath . '/WP-STATIC-CURRENT-ARCHIVE'));
+
+      error_log('archiveDir');
+      error_log($archiveDir);
+
 
 		$this->detect_base_url();
 
