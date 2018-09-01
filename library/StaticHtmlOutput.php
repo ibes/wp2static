@@ -251,41 +251,6 @@ class StaticHtmlOutput_Controller {
         file_put_contents($exportTargetsFile, implode("\r\n", $exportTargets));
     }
 
-	public function github_upload_blobs($viaCLI = false) {
-			$github = new StaticHtmlOutput_GitHub(
-				$this->_githubRepo,
-				$this->_githubPersonalAccessToken,
-				$this->_githubBranch,
-				$this->_githubPath,
-				$this->_uploadsPath
-			);
-
-			$github->upload_blobs($viaCLI);
-    }
-
-    public function github_prepare_export() {
-			$github = new StaticHtmlOutput_GitHub(
-				$this->_githubRepo,
-				$this->_githubPersonalAccessToken,
-				$this->_githubBranch,
-				$this->_githubPath,
-				$this->_uploadsPath
-			);
-
-			$github->prepare_deployment();
-    }
-
-    public function github_finalise_export() {
-			$github = new StaticHtmlOutput_GitHub(
-				$this->_githubRepo,
-				$this->_githubPersonalAccessToken,
-				$this->_githubBranch,
-				$this->_githubPath,
-				$this->_uploadsPath
-			);
-
-			$github->commit_new_tree();
-    }
 
   public function capture_last_deployment() {
       // skip for first export state
@@ -656,77 +621,7 @@ public function crawlABitMore($viaCLI = false) {
         //echo $publicDownloadableZip;
     }
 
-    public function ftp_prepare_export() {
-
-			$ftp = new StaticHtmlOutput_FTP(
-				$this->_ftpServer,
-				$this->_ftpUsername,
-				$this->_ftpPassword,
-				$this->_ftpRemotePath,
-				$this->_useActiveFTP,
-				$this->_uploadsPath
-			);
-
-			$ftp->prepare_deployment();
-    }
-
-    public function ftp_transfer_files($viaCLI = false) {
-
-			$ftp = new StaticHtmlOutput_FTP(
-				$this->_ftpServer,
-				$this->_ftpUsername,
-				$this->_ftpPassword,
-				$this->_ftpRemotePath,
-				$this->_useActiveFTP,
-				$this->_uploadsPath
-			);
-
-			$ftp->transfer_files($viaCLI);
-    }
-
-    public function bunnycdn_prepare_export() {
-		if ( wpsho_fr()->is__premium_only() ) {
-			$bunnyCDN = new StaticHtmlOutput_BunnyCDN(
-				$this->_bunnycdnPullZoneName,
-				$this->_bunnycdnAPIKey,
-				$this->_bunnycdnRemotePath,
-				$this->_uploadsPath
-			);
-
-			$bunnyCDN->prepare_export();
-		}
-    }
-
-    public function bunnycdn_transfer_files($viaCLI = false) {
-		if ( wpsho_fr()->is__premium_only() ) {
-
-			$bunnyCDN = new StaticHtmlOutput_BunnyCDN(
-				$this->_bunnycdnPullZoneName,
-				$this->_bunnycdnAPIKey,
-				$this->_bunnycdnRemotePath,
-				$this->_uploadsPath
-			);
-
-			$bunnyCDN->transfer_files($viaCLI);
-		}
-    }
-
-    public function bunnycdn_purge_cache() {
-		if ( wpsho_fr()->is__premium_only() ) {
-
-			$bunnyCDN = new StaticHtmlOutput_BunnyCDN(
-				$this->_bunnycdnPullZoneName,
-				$this->_bunnycdnAPIKey,
-				$this->_bunnycdnRemotePath,
-				$this->_uploadsPath
-			);
-
-			$bunnyCDN->purge_all_cache();
-		}
-    }
-
 	public function prepare_file_list($export_target) {
-
          $file_list_path = $this->_uploadsPath . '/WP-STATIC-EXPORT-' . $export_target . '-FILES-TO-EXPORT';
 
 		// zero file
@@ -745,101 +640,6 @@ public function crawlABitMore($viaCLI = false) {
         StaticHtmlOutput_FilesHelper::recursively_scan_dir($siteroot, $siteroot, $file_list_path);
 	}
 
-    public function s3_prepare_export() {
-		if ( wpsho_fr()->is__premium_only() ) {
-
-			$s3 = new StaticHtmlOutput_S3(
-				$this->_s3Key,
-				$this->_s3Secret,
-				$this->_s3Region,
-				$this->_s3Bucket,
-				$this->_s3RemotePath,
-				$this->_uploadsPath
-			);
-
-			$s3->prepare_deployment();
-		}	
-    }
-
-    public function s3_transfer_files($viaCLI = false) {
-		if ( wpsho_fr()->is__premium_only() ) {
-
-			$s3 = new StaticHtmlOutput_S3(
-				$this->_s3Key,
-				$this->_s3Secret,
-				$this->_s3Region,
-				$this->_s3Bucket,
-				$this->_s3RemotePath,
-				$this->_uploadsPath
-			);
-
-			$s3->transfer_files($viaCLI);
-		}
-    }
-
-	public function cloudfront_invalidate_all_items() {
-		if ( wpsho_fr()->is__premium_only() ) {
-			require_once(__DIR__.'/CloudFront/CloudFront.php');
-			$cloudfront_id = $this->_cfDistributionId;
-
-			if( !empty($cloudfront_id) ) {
-
-				$cf = new CloudFront(
-				$this->_s3Key,
-				$this->_s3Secret,
-					$cloudfront_id);
-
-				$cf->invalidate('/*');
-			
-				if ( $cf->getResponseMessage() == 200 || $cf->getResponseMessage() == 201 )	{
-					echo 'SUCCESS';
-				} else {
-					WsLog::l('CF ERROR: ' . $cf->getResponseMessage());
-				}
-			} else {
-				echo 'SUCCESS';
-			}
-		}
-	}
-
-    public function dropbox_prepare_export() {
-
-			$dropbox = new StaticHtmlOutput_Dropbox(
-				$this->_dropboxAccessToken,
-				$this->_dropboxFolder,
-				$this->_uploadsPath
-			);
-
-			$dropbox->prepare_export();
-    }
-
-    public function dropbox_do_export($viaCLI = false) {
-
-			$dropbox = new StaticHtmlOutput_Dropbox(
-				$this->_dropboxAccessToken,
-				$this->_dropboxFolder,
-				$this->_uploadsPath
-			);
-
-			$dropbox->transfer_files($viaCLI);
-    }
-
-
-    public function netlify_do_export () {
-
-
-			// will exclude the siteroot when copying
-			$archiveDir = file_get_contents($this->_uploadsPath . '/WP-STATIC-CURRENT-ARCHIVE');
-			$archiveName = rtrim($archiveDir, '/') . '.zip';
-
-			$netlify = new StaticHtmlOutput_Netlify(
-				$this->_netlifySiteID,
-				$this->_netlifyPersonalAccessToken
-			);
-
-			echo $netlify->deploy($archiveName);
-    }
-
     public function deploy($viaCLI = false) {
       switch($this->_selected_deployment_option) {
         case 'folder':
@@ -847,19 +647,46 @@ public function crawlABitMore($viaCLI = false) {
         break;
 
         case 'github':
-          $this->github_prepare_export();
-          $this->github_upload_blobs($viaCLI);
-          $this->github_finalise_export();
+          $github = new StaticHtmlOutput_GitHub(
+            $this->_githubRepo,
+            $this->_githubPersonalAccessToken,
+            $this->_githubBranch,
+            $this->_githubPath,
+            $this->_uploadsPath
+          );
+
+          $github->prepare_deployment();
+          $github->upload_blobs($viaCLI);
+          $github->commit_new_tree();
         break;
 
         case 'ftp':
-          $this->ftp_prepare_export();
-          $this->ftp_transfer_files($viaCLI);
+          $ftp = new StaticHtmlOutput_FTP(
+            $this->_ftpServer,
+            $this->_ftpUsername,
+            $this->_ftpPassword,
+            $this->_ftpRemotePath,
+            $this->_useActiveFTP,
+            $this->_uploadsPath
+          );
+
+          $ftp->prepare_deployment();
+          $ftp->transfer_files($viaCLI);
         break;
 
         case 'netlify':
           $this->create_zip();
-          $this->netlify_do_export();
+
+          // will exclude the siteroot when copying
+          $archiveDir = file_get_contents($this->_uploadsPath . '/WP-STATIC-CURRENT-ARCHIVE');
+          $archiveName = rtrim($archiveDir, '/') . '.zip';
+
+          $netlify = new StaticHtmlOutput_Netlify(
+            $this->_netlifySiteID,
+            $this->_netlifyPersonalAccessToken
+          );
+
+          echo $netlify->deploy($archiveName);
         break;
 
         case 'zip':
@@ -867,19 +694,67 @@ public function crawlABitMore($viaCLI = false) {
         break;
 
         case 's3':
-          $this->s3_prepare_export();
-          $this->s3_transfer_files($viaCLI);
-          $this->cloudfront_invalidate_all_items();
+          if ( wpsho_fr()->is__premium_only() ) {
+
+            $s3 = new StaticHtmlOutput_S3(
+              $this->_s3Key,
+              $this->_s3Secret,
+              $this->_s3Region,
+              $this->_s3Bucket,
+              $this->_s3RemotePath,
+              $this->_uploadsPath
+            );
+
+            $s3->prepare_deployment();
+            $s3->transfer_files($viaCLI);
+
+            $cloudfront_id = $this->_cfDistributionId;
+
+            if( !empty($cloudfront_id) ) {
+              require_once(__DIR__.'/CloudFront/CloudFront.php');
+
+              $cf = new CloudFront(
+              $this->_s3Key,
+              $this->_s3Secret,
+                $cloudfront_id);
+
+              $cf->invalidate('/*');
+            
+              if ( $cf->getResponseMessage() == 200 || $cf->getResponseMessage() == 201 )	{
+                echo 'SUCCESS';
+              } else {
+                WsLog::l('CF ERROR: ' . $cf->getResponseMessage());
+              }
+            } else {
+              echo 'SUCCESS';
+            }
+          }	
         break;
 
         case 'bunnycdn':
-          $this->bunnycdn_prepare_export();
-          $this->bunnycdn_transfer_files($viaCLI);
+          if ( wpsho_fr()->is__premium_only() ) {
+            $bunnyCDN = new StaticHtmlOutput_BunnyCDN(
+              $this->_bunnycdnPullZoneName,
+              $this->_bunnycdnAPIKey,
+              $this->_bunnycdnRemotePath,
+              $this->_uploadsPath
+            );
+
+            $bunnyCDN->prepare_export();
+            $bunnyCDN->transfer_files($viaCLI);
+            $bunnyCDN->purge_all_cache();
+          }
         break;
 
         case 'dropbox':
-          $this->dropbox_prepare_export();
-          $this->dropbox_do_export($viaCLI);
+          $dropbox = new StaticHtmlOutput_Dropbox(
+            $this->_dropboxAccessToken,
+            $this->_dropboxFolder,
+            $this->_uploadsPath
+          );
+
+          $dropbox->prepare_export();
+          $dropbox->transfer_files($viaCLI);
         break;
       }
 
