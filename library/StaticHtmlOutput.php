@@ -59,7 +59,6 @@ class StaticHtmlOutput_Controller {
         self::$_instance->_uploadsPath = $tmp_var_to_hold_return_array['basedir'];
         self::$_instance->_uploadsURL = $tmp_var_to_hold_return_array['baseurl'];
 
-        //self::$_instance->loadSettingsFromClientOrDatabase();
 		}
 
 		return self::$_instance;
@@ -841,7 +840,7 @@ public function crawlABitMore($viaCLI = false) {
 			echo $netlify->deploy($archiveName);
     }
 
-    public function deploy() {
+    public function deploy($viaCLI = false) {
       switch($this->_selected_deployment_option) {
         case 'folder':
           $this->copyStaticSiteToPublicFolder();
@@ -849,13 +848,13 @@ public function crawlABitMore($viaCLI = false) {
 
         case 'github':
           $this->github_prepare_export();
-          $this->github_upload_blobs(true);
+          $this->github_upload_blobs($viaCLI);
           $this->github_finalise_export();
         break;
 
         case 'ftp':
           $this->ftp_prepare_export();
-          $this->ftp_transfer_files(true);
+          $this->ftp_transfer_files($viaCLI);
         break;
 
         case 'netlify':
@@ -869,18 +868,18 @@ public function crawlABitMore($viaCLI = false) {
 
         case 's3':
           $this->s3_prepare_export();
-          $this->s3_transfer_files(true);
+          $this->s3_transfer_files($viaCLI);
           $this->cloudfront_invalidate_all_items();
         break;
 
         case 'bunnycdn':
           $this->bunnycdn_prepare_export();
-          $this->bunnycdn_transfer_files(true);
+          $this->bunnycdn_transfer_files($viaCLI);
         break;
 
         case 'dropbox':
           $this->dropbox_prepare_export();
-          $this->dropbox_do_export(true);
+          $this->dropbox_do_export($viaCLI);
         break;
       }
 
@@ -900,40 +899,24 @@ public function crawlABitMore($viaCLI = false) {
     public function trigger_export_from_ui() {
       error_log('export triggered from UI');
 
-$this->capture_last_deployment();
-$this->cleanup_working_files();
-$this->cleanup_leftover_archives();
-$this->start_export();
-$this->crawl_site();
-$this->create_symlink_to_latest_archive();
-$this->post_process_archive_dir();
+        self::$_instance->loadSettingsFromClientOrDatabase();
 
-if (in_array($this->_selected_deployment_option, array('zip', 'netlify'))) {
-  $this->create_zip();
-}
+        $this->capture_last_deployment();
+        $this->cleanup_working_files();
+        $this->cleanup_leftover_archives();
+        $this->start_export();
+        $this->crawl_site();
+        $this->create_symlink_to_latest_archive();
+        $this->post_process_archive_dir();
+        $this->deploy();
+        $this->post_export_teardown();
 
-$this->github_prepare_export();
-$this->github_upload_blobs();
-$this->github_finalise_export();
-$this->ftp_prepare_export();
-$this->ftp_transfer_files();
-$this->bunnycdn_prepare_export();
-$this->bunnycdn_transfer_files();
-$this->bunnycdn_purge_cache();
-$this->s3_prepare_export();
-$this->s3_transfer_files();
-$this->cloudfront_invalidate_all_items();
-$this->dropbox_prepare_export();
-$this->dropbox_do_export();
-$this->netlify_do_export();
-
-$this->post_export_teardown();
-      
+        echo 'SUCCESS';
     }
-
 
     public function doExportWithoutGUI() {
       if ( wpsho_fr()->is_plan('professional_edition') ) {
+        self::$_instance->loadSettingsFromClientOrDatabase();
     
         //$this->capture_last_deployment(); 
         $this->cleanup_leftover_archives(true);
@@ -946,7 +929,7 @@ $this->post_export_teardown();
           $this->create_zip();
         }
 
-        $this->deploy();
+        $this->deploy(true);
         $this->post_export_teardown();
       }
     }
@@ -957,7 +940,6 @@ $this->post_export_teardown();
 			->save();
 
 		echo 'SUCCESS';
-
 	}	
 
 	public function detect_base_url() {
