@@ -14,13 +14,15 @@ class StaticHtmlOutput_FilesHelper
 	}
 
 	public static function delete_dir_with_files($dir) { 
-		$files = array_diff(scandir($dir), array('.','..')); 
+    if (is_dir($dir)) {
+      $files = array_diff(scandir($dir), array('.','..')); 
 
-		foreach ($files as $file) { 
-			(is_dir("$dir/$file")) ? self::delete_dir_with_files("$dir/$file") : unlink("$dir/$file"); 
-		} 
+      foreach ($files as $file) { 
+        (is_dir("$dir/$file")) ? self::delete_dir_with_files("$dir/$file") : unlink("$dir/$file"); 
+      } 
 
-		return rmdir($dir); 
+      return rmdir($dir); 
+    }
 	} 
 
 	public static function recursively_scan_dir($dir, $siteroot, $file_list_path){

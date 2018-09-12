@@ -6,7 +6,7 @@
  */
 
 class StaticHtmlOutput_Controller {
-	const VERSION = '5.8';
+	const VERSION = '6.0';
 	const OPTIONS_KEY = 'wp-static-html-output-options';
 	const HOOK = 'wp-static-html-output';
 
@@ -982,9 +982,11 @@ public function crawlABitMore($viaCLI = false) {
   
   // default rename in PHP throws warnings if dir is populated
   public function rename_populated_directory($source, $target) {
-    $this->recursive_copy($source, $target);
+		if (file_exists($source)) {
+      $this->recursive_copy($source, $target);
 
-    StaticHtmlOutput_FilesHelper::delete_dir_with_files($source);
+      StaticHtmlOutput_FilesHelper::delete_dir_with_files($source);
+		}
   }
 
 	public function remove_symlink_to_latest_archive() {

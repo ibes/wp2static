@@ -3,7 +3,7 @@
  * Plugin Name: WP Static Site Generator
  * Plugin URI:  https://wp2static.com
  * Description: The optimum solution to speed up and secure your WordPress site - export to static HTML and hide all traces of WordPress from your site!
- * Version:     5.8
+ * Version:     6.0
  * Author:      Leon Stafford
  * Author URI:  https://leonstafford.github.io
  * Text Domain: static-html-output-plugin
@@ -71,6 +71,8 @@ do_action( 'wpsho_fr_loaded' );
   require_once 'library/StaticHtmlOutput/Netlify.php';
   require_once 'library/StaticHtmlOutput/GitHub.php';
   require_once 'library/StaticHtmlOutput/Dropbox.php';
+  require_once 'library/StaticHtmlOutput/WPAsyncRequest.php';
+  require_once 'library/StaticHtmlOutput/WPBackgroundProcess.php';
 	
 	if ( wpsho_fr()->is__premium_only() ) {
 		require_once 'library/StaticHtmlOutput/BunnyCDN.php';

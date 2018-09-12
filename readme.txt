@@ -5,7 +5,7 @@ Tags: static site generator,cache,wp super cache,wp fastest cache,w3 total cache
 Requires at least: 3.2
 Tested up to: 4.9.8
 Requires PHP: 5.4
-Stable tag: 5.8
+Stable tag: 6.0
 
 
 
@@ -96,6 +96,10 @@ When you have an issue, send the contents of your "Export Log" on the plugin scr
 2. The main interface (Japanese)
 
 == Changelog ==
+
+= 6.0 =
+
+ * Improvement: Major improvement to the speed of exporting/deploying with the plugin
 
 = 5.8 =
 
