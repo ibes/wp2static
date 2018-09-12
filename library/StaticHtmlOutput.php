@@ -59,6 +59,10 @@ class StaticHtmlOutput_Controller {
         self::$_instance->_uploadsPath = $tmp_var_to_hold_return_array['basedir'];
         self::$_instance->_uploadsURL = $tmp_var_to_hold_return_array['baseurl'];
 
+        // async helpers
+        self::$_instance->process_single = new Async_Request();
+        self::$_instance->process_all    = new Async_Deploy();
+
 		}
 
 		return self::$_instance;
