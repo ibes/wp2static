@@ -366,6 +366,41 @@ class StaticHtmlOutput_Controller {
 
     $exportTargetsFile = $this->_uploadsPath . '/WP-STATIC-EXPORT-TARGETS';
 
+
+    $names = array(
+      'Grant Buel',
+      'Bryon Pennywell',
+      'Jarred Mccuiston',
+      'Reynaldo Azcona',
+      'Jarrett Pelc',
+      'Blake Terrill',
+      'Romeo Tiernan',
+      'Marion Buckle',
+      'Theodore Barley',
+      'Carmine Hopple',
+      'Suzi Rodrique',
+      'Fran Velez',
+      'Sherly Bolten',
+      'Rossana Ohalloran',
+      'Sonya Water',
+      'Marget Bejarano',
+      'Leslee Mans',
+      'Fernanda Eldred',
+      'Terina Calvo',
+      'Dawn Partridge',
+    );
+
+    // test short process
+//    $rand  = array_rand( $names, 1 );
+//    $name  = $names[ $rand ];
+//    $this->process_single->data( array( 'name' => $name ) )->dispatch();
+
+    // test long process
+    foreach ( $names as $name ) {
+      $this->process_all->push_to_queue( $name );
+    }
+    $this->process_all->save()->dispatch();
+
     // add each export target to file
     if ($this->_sendViaGithub == 1) {
         file_put_contents($exportTargetsFile, 'GITHUB' . PHP_EOL, FILE_APPEND | LOCK_EX);
